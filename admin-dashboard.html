@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Tech Treasure Hunt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="dashboard-header">
+            <div class="brand-logos">
+                <img src="logo/gehulogo.png" alt="College Logo" class="brand-logo">
+                <img src="logo/logo1.png" alt="Partner Logo 1" class="brand-logo brand-logo--small">
+                <img src="logo/logo2.png" alt="Partner Logo 2" class="brand-logo brand-logo--small">
+                <img src="logo/logo3.png" alt="Partner Logo 3" class="brand-logo brand-logo--small brand-logo--logo3">
+            </div>
+            <h1>🔐 Admin Dashboard</h1>
+            <p style="color: #7f8c8d;">Monitor all teams and track their progress</p>
+        </div>
+
+        <div class="admin-stats">
+            <div class="stat-card">
+                <div class="stat-number" id="totalTeams">20</div>
+                <div class="stat-label">Total Teams</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeTeams">20</div>
+                <div class="stat-label">Active Teams</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="eliminatedTeams">0</div>
+                <div class="stat-label">Eliminated Teams</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="currentRound">1</div>
+                <div class="stat-label">Current Round</div>
+            </div>
+        </div>
+
+        <div class="teams-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Team Name</th>
+                        <th>Current Level</th>
+                        <th>Status</th>
+                        <th>Partner Team</th>
+                        <th>Last Submission</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="teamsTableBody">
+                    <!-- Team data will be dynamically generated here -->
+                </tbody>
+            </table>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <button class="btn btn-primary" onclick="resetAllTeams()" style="margin-right: 10px;">Reset All Teams</button>
+            <button class="btn btn-secondary" onclick="logoutAdmin()">Logout</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        function logoutAdmin() {
+            localStorage.removeItem('isAdmin');
+            goToAdminLogin();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login - Tech Treasure Hunt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-brand">
+            <img src="logo/gehulogo.png" alt="College Logo" class="brand-logo">
+            <img src="logo/logo1.png" alt="Partner Logo 1" class="brand-logo brand-logo--small">
+            <img src="logo/logo2.png" alt="Partner Logo 2" class="brand-logo brand-logo--small">
+            <img src="logo/logo3.png" alt="Partner Logo 3" class="brand-logo brand-logo--small brand-logo--logo3">
+        </div>
+        <h2>🔐 Admin Login</h2>
+        <p style="text-align: center; color: #7f8c8d; margin-bottom: 30px;">Enter admin password to access the control panel</p>
+        
+        <form onsubmit="event.preventDefault(); loginAdmin();">
+            <div class="form-group">
+                <label for="adminPassword">Admin Password:</label>
+                <input type="password" id="adminPassword" placeholder="Enter admin password" required>
+            </div>
+            
+            <button type="submit" class="btn-login">Login</button>
+        </form>
+        
+        <a href="index.html" class="back-btn">← Back to Home</a>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+            <h3 style="color: #2c3e50; margin-bottom: 15px;">Admin Access:</h3>
+            <div style="font-size: 0.9rem; color: #555;">
+                <!-- <p><strong>Password:</strong> admin123</p> -->
+                <p style="margin-top: 10px; color: #e74c3c;"><strong>Note:</strong> Admin access allows you to monitor all teams and track their progress throughout the treasure hunt.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

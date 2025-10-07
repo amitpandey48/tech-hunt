@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Login - Tech Treasure Hunt</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=Orbitron:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-brand">
+            <img src="logo/gehulogo.png" alt="College Logo" class="brand-logo">
+            <img src="logo/logo1.png" alt="Partner Logo 1" class="brand-logo brand-logo--small">
+            <img src="logo/logo2.png" alt="Partner Logo 2" class="brand-logo brand-logo--small">
+            <img src="logo/logo3.png" alt="Partner Logo 3" class="brand-logo brand-logo--small brand-logo--logo3">
+        </div>
+        <h2>🏆 Team Login</h2>
+        <p style="text-align: center; color: #7f8c8d; margin-bottom: 30px;">Enter your team credentials to access the treasure hunt</p>
+        
+        <form onsubmit="event.preventDefault(); loginTeam();">
+            <div class="form-group">
+                <label for="teamName">Team Name:</label>
+                <input type="text" id="teamName" placeholder="e.g., Team1, Team2, etc." required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Enter team password" required>
+            </div>
+            
+            <button type="submit" class="btn-login">Login</button>
+        </form>
+        
+        <a href="index.html" class="back-btn">← Back to Home</a>
+        
+        <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px;">
+            <!-- 
+            <h3 style="color: #2c3e50; margin-bottom: 15px;">Team Credentials:</h3>
+            <div style="font-size: 0.9rem; color: #555;">
+                <p><strong>Team1:</strong> team1pass</p>
+                <p><strong>Team2:</strong> team2pass</p>
+                <p><strong>Team3:</strong> team3pass</p>
+                <p><strong>Team4:</strong> team4pass</p>
+                <p><strong>Team5:</strong> team5pass</p>
+                <p><strong>Team6:</strong> team6pass</p>
+                <p><strong>Team7:</strong> team7pass</p>
+                <p><strong>Team8:</strong> team8pass</p>
+                <p><strong>Team9:</strong> team9pass</p>
+                <p><strong>Team10:</strong> team10pass</p>
+                <p><strong>Team11:</strong> team11pass</p>
+                <p><strong>Team12:</strong> team12pass</p>
+                <p><strong>Team13:</strong> team13pass</p>
+                <p><strong>Team14:</strong> team14pass</p>
+                <p><strong>Team15:</strong> team15pass</p>
+                <p><strong>Team16:</strong> team16pass</p>
+                <p><strong>Team17:</strong> team17pass</p>
+                <p><strong>Team18:</strong> team18pass</p>
+                <p><strong>Team19:</strong> team19pass</p>
+                <p><strong>Team20:</strong> team20pass</p>
+            </div>
+            -->
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
