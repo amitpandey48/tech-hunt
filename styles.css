@@ -21,7 +21,7 @@ body::before {
     content: "";
     position: fixed;
     inset: -20vh -20vw;
-    background: conic-gradient(from 0deg at 50% 50%, rgba(5, 151, 144, 0.18), rgba(150, 26, 212, 0.18), rgba(13, 192, 37, 0.14), rgba(211, 122, 21, 0.18));
+    background: conic-gradient(from 0deg at 50% 50%, rgba(80, 170, 255, 0.18), rgba(196, 113, 237, 0.18), rgba(255, 77, 109, 0.14), rgba(80, 170, 255, 0.18));
     filter: blur(70px) saturate(110%);
     animation: floatGlow 18s linear infinite;
     z-index: -1;
@@ -55,61 +55,36 @@ header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 3px;
+    gap: 16px;
     margin-bottom: 12px;
     width: 100%;
 }
+
 .brand-logos-extra {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     align-items: center;
-    gap: 8px;
-    margin: 12px 0;
-    width: 100%;
-    box-sizing: border-box;
+    justify-content: center;
+    gap: 16px;
+    margin: 8px 0 6px 0;
+    flex-wrap: wrap;
 }
 
 .brand-logo {
-    height: 60px;           /* fixed height */
-    width: auto;            /* proportional width */
-    max-width: 25%;         /* each logo max 25% of container on desktop */
+    height: 72px;
+    width: auto;
     object-fit: contain;
-    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25));
+    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35));
     opacity: 0.95;
-    transition: transform 0.3s ease;
-    flex: 1 1 auto;         /* flexible sizing and wrapping */
-}
-
-.brand-logo:hover {
-    transform: scale(1.05);
 }
 
 .brand-logo.brand-logo--small {
-    max-width: 30%;
-    height: 80px;
+    height: 56px;
 }
 
-.brand-logo--logo3 {
-    max-width: 28%;
-    height: 70px;
-}
-
-/* Tablet */
-@media (max-width: 768px) {
-    .brand-logo { height: 50px; max-width: 33%; }
-    .brand-logo.brand-logo--small { height: 65px; max-width: 40%; }
-    .brand-logo--logo3 { height: 60px; max-width: 38%; }
-}
-
-/* Mobile */
 @media (max-width: 480px) {
-    .brand-logo { height: 40px; max-width: 45%; }
-    .brand-logo.brand-logo--small { height: 50px; max-width: 50%; }
-    .brand-logo--logo3 { height: 50px; max-width: 55%; }
-    .brand-logos-extra { gap: 8px; }
+    .brand-logo { height: 56px; }
+    .brand-logo.brand-logo--small { height: 44px; }
 }
-
 
 header h1 {
     font-size: 3rem;
