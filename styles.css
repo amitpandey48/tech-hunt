@@ -82,7 +82,7 @@ header {
 }
 
 @media (max-width: 480px) {
-    .brand-logo { height: 56px; }
+    .brand-logo { height: 40px; }
     .brand-logo.brand-logo--small { height: 40px; }
 }
 
