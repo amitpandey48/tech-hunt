@@ -9,7 +9,7 @@ body {
     font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     color: #e8ecf1;
-    background: radial-gradient(1200px 800px at 10% 10%, #2c3f3e 0%, #141625 40%),
+    background: radial-gradient(1200px 800px at 10% 10%, #2c2e3f 0%, #141625 40%),
                 radial-gradient(1000px 700px at 90% 20%, #1b2143 0%, #121424 45%),
                 radial-gradient(1000px 700px at 10% 90%, #2a1f3a 0%, #10121f 45%);
     min-height: 100vh;
@@ -59,38 +59,57 @@ header {
     margin-bottom: 12px;
     width: 100%;
 }
-
 .brand-logos-extra {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 16px;
-    margin: 8px 0 6px 0;
     flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 12px 0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .brand-logo {
-    height: 100px;
-    width: auto;
+    height: 60px;           /* fixed height */
+    width: auto;            /* proportional width */
+    max-width: 25%;         /* each logo max 25% of container on desktop */
     object-fit: contain;
-    filter: drop-shadow(0 6px 14px rgba(0,0,0,0.35));
+    filter: drop-shadow(0 4px 10px rgba(0,0,0,0.25));
     opacity: 0.95;
+    transition: transform 0.3s ease;
+    flex: 1 1 auto;         /* flexible sizing and wrapping */
+}
+
+.brand-logo:hover {
+    transform: scale(1.05);
 }
 
 .brand-logo.brand-logo--small {
-    height: 120px;
+    max-width: 30%;
+    height: 80px;
 }
 
-/* Slightly larger size for the third partner logo */
 .brand-logo--logo3 {
-    height: 64px;
+    max-width: 28%;
+    height: 70px;
 }
 
-@media (max-width: 480px) {
-    .brand-logo { height: 56px; }
-    .brand-logo.brand-logo--small { height: 44px; }
-    .brand-logo--logo3 { height: 50px; }
+/* Tablet */
+@media (max-width: 768px) {
+    .brand-logo { height: 50px; max-width: 33%; }
+    .brand-logo.brand-logo--small { height: 65px; max-width: 40%; }
+    .brand-logo--logo3 { height: 60px; max-width: 38%; }
 }
+
+/* Mobile */
+@media (max-width: 480px) {
+    .brand-logo { height: 40px; max-width: 45%; }
+    .brand-logo.brand-logo--small { height: 50px; max-width: 50%; }
+    .brand-logo--logo3 { height: 50px; max-width: 55%; }
+    .brand-logos-extra { gap: 8px; }
+}
+
 
 header h1 {
     font-size: 3rem;
