@@ -83,7 +83,7 @@ header {
 
 @media (max-width: 480px) {
     .brand-logo { height: 56px; }
-    .brand-logo.brand-logo--small { height: 44px; }
+    .brand-logo.brand-logo--small { height: 40px; }
 }
 
 header h1 {
