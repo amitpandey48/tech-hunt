@@ -36,6 +36,35 @@ let teamData = {
     'Team20': { password: 'team20pass', level: 1, status: 'active', partner: 'Team19', submissions: {} }
 };
 
+// Simple client-side activity log (no backend). Stored in localStorage and shown to admin.
+// Each entry: { ts, team, event, details }
+function loadActivityLog() {
+    try {
+        const data = localStorage.getItem('activityLog');
+        return data ? JSON.parse(data) : [];
+    } catch (e) {
+        return [];
+    }
+}
+
+function persistActivityLog(entries) {
+    try {
+        localStorage.setItem('activityLog', JSON.stringify(entries));
+    } catch (e) {
+        // ignore
+    }
+}
+
+function logActivity(team, eventName, details) {
+    const entries = loadActivityLog();
+    entries.unshift({ ts: Date.now(), team, event: eventName, details });
+    // cap to last 500 entries
+    if (entries.length > 500) entries.length = 500;
+    persistActivityLog(entries);
+    // notify other tabs
+    try { localStorage.setItem('__activityLogUpdated', String(Date.now())); } catch (e) {}
+}
+
 // Pending elimination requests awaiting admin approval
 // Removed eliminationRequests; admin can directly eliminate teams
 
@@ -104,10 +133,23 @@ window.addEventListener('storage', (event) => {
                             }
                         }
                     }
+                } else {
+                    // Any other page (e.g., quiz/riddle): if eliminated, notify and send to dashboard
+                    const user = localStorage.getItem('currentUser');
+                    if (user && teamData[user] && teamData[user].status === 'eliminated') {
+                        try { showSnackbar('You have been eliminated. Returning to dashboard.'); } catch (_) {}
+                        setTimeout(() => { goToDashboard(); }, 800);
+                    }
                 }
             }
         } catch (e) {
             console.warn('Failed to parse incoming teamData', e);
+        }
+    }
+    if (event.key === '__activityLogUpdated') {
+        const currentPage = window.location.pathname.split('/').pop();
+        if (currentPage === 'admin-dashboard.html') {
+            displayActivityLog();
         }
     }
     // No eliminationRequests syncing needed
@@ -231,6 +273,7 @@ function loginTeam() {
     if (teamData[teamName] && teamData[teamName].password === password) {
         currentUser = teamName;
         localStorage.setItem('currentUser', teamName);
+        logActivity(teamName, 'login', 'Team logged in');
         goToDashboard();
     } else {
         alert('Invalid team name or password');
@@ -243,6 +286,7 @@ function loginAdmin() {
     
     if (password === adminPassword) {
         localStorage.setItem('isAdmin', 'true');
+        logActivity('ADMIN', 'login', 'Admin logged in');
         goToAdminDashboard();
     } else {
         alert('Invalid admin password');
@@ -272,6 +316,11 @@ function displayTeamProgress() {
     
     document.getElementById('teamName').textContent = currentUser;
     document.getElementById('currentLevel').textContent = team.level;
+    const info = document.getElementById('lastSubmissionInfo');
+    if (info) {
+        const lastSub = team.submissions ? Math.max(0, ...Object.values(team.submissions)) : 0;
+        info.textContent = lastSub ? `Last Submission: ${new Date(lastSub).toLocaleString()}` : '';
+    }
     
     const levelsContainer = document.getElementById('levelsContainer');
     levelsContainer.innerHTML = '';
@@ -283,7 +332,7 @@ function displayTeamProgress() {
         message.innerHTML = `
             <div class="level-card current">
                 <div class="level-title">Eliminated</div>
-                <div class="level-status status-locked">Sorry! The other team submitted the answer first. You are eliminated.</div>
+                <div class="level-status status-locked">Sorry! You have been eliminated by admin or due to time up.</div>
             </div>
         `;
         levelsContainer.appendChild(message);
@@ -329,6 +378,14 @@ function startLevel(levelNumber) {
         alert('Sorry! The answer is submitted by your opponent first and you are eliminated.');
         return;
     }
+    // Re-check in case status changed just now
+    loadTeamDataFromStorage();
+    const latest = teamData[currentUser];
+    if (latest && latest.status === 'eliminated') {
+        alert('You have been eliminated.');
+        goToDashboard();
+        return;
+    }
     if (levelNumber === 1) {
         showLevelPassword(levelNumber);
     } else {
@@ -342,8 +399,17 @@ function startLevel(levelNumber) {
 }
 
 function showLevelPassword(levelNumber) {
+    // Guard again before prompting
+    loadTeamDataFromStorage();
+    const t = teamData[currentUser];
+    if (!t || t.status === 'eliminated') {
+        alert('You have been eliminated.');
+        goToDashboard();
+        return;
+    }
     const password = prompt(`Enter password for Level ${levelNumber}:`);
     if (password === gameState[`level${levelNumber}`].password) {
+        logActivity(currentUser, 'level_unlocked', `Level ${levelNumber} unlocked`);
         showQuiz(levelNumber);
     } else {
         alert('Incorrect password');
@@ -401,9 +467,11 @@ function submitQuiz(levelNumber) {
     
     const quiz = quizQuestions[levelNumber];
     if (selectedAnswer === quiz.correct) {
+        logActivity(currentUser, 'quiz_correct', `Level ${levelNumber} quiz correct`);
         alert('Correct! Moving to riddle round...');
         showRiddle(levelNumber);
     } else {
+        logActivity(currentUser, 'quiz_incorrect', `Level ${levelNumber} quiz incorrect`);
         alert('Incorrect answer. Try again.');
         selectedAnswer = null;
         document.querySelectorAll('.quiz-option').forEach(option => {
@@ -458,11 +526,11 @@ function submitRiddle(levelNumber, correctAnswer) {
             if (!team.submissions) team.submissions = {};
             team.submissions[levelNumber] = Date.now();
         }
+        logActivity(currentUser, 'riddle_correct', `Level ${levelNumber} riddle correct`);
         alert('Correct! You have advanced to the next level!');
         
         // Update team level
         
-        // Admin approval flow removed
         team.level = levelNumber + 1;
         
         // Save to localStorage (and notify other tabs)
@@ -476,9 +544,11 @@ function submitRiddle(levelNumber, correctAnswer) {
         }
         
         // Final level completed
+        logActivity(currentUser, 'completed_all', 'Completed all levels');
         alert('Congratulations! You have completed all levels!');
         goToDashboard();
     } else {
+        logActivity(currentUser, 'riddle_incorrect', `Level ${levelNumber} riddle incorrect`);
         alert('Incorrect answer. Try again.');
     }
 }
@@ -508,6 +578,7 @@ function startLevelTimer(levelNumber) {
             if (t && t.status === 'active' && t.level === levelNumber) {
                 t.status = 'eliminated';
                 persistTeamData();
+                logActivity(currentUser, 'auto_eliminated', `Time up at Level ${levelNumber}`);
                 alert('Time up! You are eliminated for exceeding the 25-minute limit.');
                 goToDashboard();
             }
@@ -541,12 +612,14 @@ function loadAdminDashboard() {
     
     displayAdminStats();
     displayTeamsTable();
+    displayActivityLog();
     // Periodic refresh as a fallback in case storage event is throttled
     if (!window.__adminRefreshInterval) {
         window.__adminRefreshInterval = setInterval(() => {
             loadTeamDataFromStorage();
             displayAdminStats();
             displayTeamsTable();
+            displayActivityLog();
         }, 5000);
     }
 }
@@ -590,6 +663,7 @@ function eliminateTeam(teamName) {
     if (teamData[teamName].status !== 'active') return;
     teamData[teamName].status = 'eliminated';
     persistTeamData();
+    logActivity('ADMIN', 'eliminate', `Eliminated ${teamName}`);
     displayAdminStats();
     displayTeamsTable();
 }
@@ -612,9 +686,150 @@ function resetAllTeams() {
         // ignore
     }
     persistTeamData();
+    logActivity('ADMIN', 'reset_all', 'Reset all teams to start');
     displayAdminStats();
     displayTeamsTable();
     alert('All teams have been reset to start.');
+}
+
+function displayActivityLog() {
+    const body = document.getElementById('activityLogBody');
+    if (!body) return;
+    const entries = loadActivityLog();
+    body.innerHTML = '';
+    entries.slice(0, 100).forEach(entry => {
+        const tr = document.createElement('tr');
+        const time = new Date(entry.ts).toLocaleString();
+        tr.innerHTML = `
+            <td>${time}</td>
+            <td>${entry.team}</td>
+            <td>${entry.event}</td>
+            <td>${entry.details || '-'}</td>
+        `;
+        body.appendChild(tr);
+    });
+}
+
+// Simple snackbar for cross-page notices
+function showSnackbar(message) {
+    const id = '__snackbar__';
+    let el = document.getElementById(id);
+    if (!el) {
+        el = document.createElement('div');
+        el.id = id;
+        el.style.position = 'fixed';
+        el.style.left = '50%';
+        el.style.bottom = '24px';
+        el.style.transform = 'translateX(-50%)';
+        el.style.background = 'rgba(0,0,0,0.8)';
+        el.style.color = '#fff';
+        el.style.padding = '12px 16px';
+        el.style.borderRadius = '12px';
+        el.style.boxShadow = '0 8px 20px rgba(0,0,0,0.4)';
+        el.style.zIndex = '9999';
+        el.style.fontFamily = "Poppins, 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif";
+        document.body.appendChild(el);
+    }
+    el.textContent = message;
+    el.style.opacity = '1';
+    setTimeout(() => { if (el) el.style.opacity = '0'; }, 2500);
+}
+
+// ----- Export/Import helpers (no backend) -----
+function exportAdminState() {
+    try {
+        const data = {
+            exportedAt: new Date().toISOString(),
+            type: 'admin_state_v1',
+            teamData,
+            activityLog: loadActivityLog()
+        };
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `tech-hunt-admin-state-${Date.now()}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    } catch (e) {
+        alert('Failed to export state');
+    }
+}
+
+function importAdminState(evt) {
+    const file = evt.target.files && evt.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+        try {
+            const parsed = JSON.parse(reader.result);
+            if (parsed && parsed.type === 'admin_state_v1' && parsed.teamData) {
+                teamData = { ...teamData, ...parsed.teamData };
+                persistTeamData();
+                if (Array.isArray(parsed.activityLog)) persistActivityLog(parsed.activityLog);
+                displayAdminStats();
+                displayTeamsTable();
+                displayActivityLog();
+                alert('Imported admin state successfully.');
+            } else {
+                alert('Invalid admin state file.');
+            }
+        } catch (e) {
+            alert('Failed to import admin state.');
+        }
+    };
+    reader.readAsText(file);
+}
+
+function exportTeamState() {
+    const user = localStorage.getItem('currentUser');
+    if (!user || !teamData[user]) { alert('No team logged in'); return; }
+    const minimal = { [user]: teamData[user] };
+    const blob = new Blob([JSON.stringify({ type: 'team_state_v1', team: user, data: minimal }, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tech-hunt-${user}-state-${Date.now()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function importTeamState(evt) {
+    const file = evt.target.files && evt.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+        try {
+            const parsed = JSON.parse(reader.result);
+            if (parsed && parsed.type === 'admin_state_v1' && parsed.teamData) {
+                // Admin pushed update to a team device
+                teamData = { ...teamData, ...parsed.teamData };
+                persistTeamData();
+                logActivity('ADMIN', 'push_update', 'Admin state imported on team device');
+                const user = localStorage.getItem('currentUser');
+                if (user) currentUser = user;
+                displayTeamProgress();
+                alert('Admin update applied.');
+            } else if (parsed && parsed.type === 'team_state_v1' && parsed.data) {
+                // Team-only snapshot restore
+                teamData = { ...teamData, ...parsed.data };
+                persistTeamData();
+                const user = localStorage.getItem('currentUser');
+                if (user) currentUser = user;
+                displayTeamProgress();
+                alert('Team state imported.');
+            } else {
+                alert('Invalid team/admin state file.');
+            }
+        } catch (e) {
+            alert('Failed to import state.');
+        }
+    };
+    reader.readAsText(file);
 }
 
 // Initialize page based on current location
