@@ -41,7 +41,7 @@
             </div>
         </div>
 
-        <div class="teams-table">
+        <div class="teams-table table-responsive">
             <table>
                 <thead>
                     <tr>
@@ -59,9 +59,35 @@
             </table>
         </div>
 
+        <section style="margin-top: 24px;" class="teams-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th colspan="4">Recent Activity</th>
+                    </tr>
+                    <tr>
+                        <th>Time</th>
+                        <th>Team</th>
+                        <th>Event</th>
+                        <th>Details</th>
+                    </tr>
+                </thead>
+                <tbody id="activityLogBody">
+                </tbody>
+            </table>
+        </section>
+
         <div style="text-align: center; margin-top: 30px;">
             <button class="btn btn-primary" onclick="resetAllTeams()" style="margin-right: 10px;">Reset All Teams</button>
             <button class="btn btn-secondary" onclick="logoutAdmin()">Logout</button>
+        </div>
+
+        <div style="text-align:center; margin-top: 16px; display:flex; gap:12px; justify-content:center; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="exportAdminState()">Export State + Activity</button>
+            <label class="btn btn-secondary" for="adminImportFile" style="cursor:pointer;">
+                Import State (from JSON)
+            </label>
+            <input type="file" id="adminImportFile" accept="application/json" style="display:none" onchange="importAdminState(event)">
         </div>
     </div>
 
