@@ -16,6 +16,12 @@ body {
     overflow-x: hidden;
 }
 
+/* Global media defaults for images to prevent overflow on phones/tablets */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
 /* animated aurora background */
 body::before {
     content: "";
@@ -54,10 +60,11 @@ header {
 .brand-logos {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 16px;
     margin-bottom: 12px;
     width: 100%;
+    flex-wrap: wrap;
 }
 
 .brand-logos-extra {
@@ -82,12 +89,12 @@ header {
 }
 
 @media (max-width: 480px) {
-    .brand-logo { height: 40px; }
-    .brand-logo.brand-logo--small { height: 40px; }
+    .brand-logo { height: 36px; }
+    .brand-logo.brand-logo--small { height: 32px; }
 }
 
 header h1 {
-    font-size: 3rem;
+    font-size: clamp(1.8rem, 4vw, 3rem);
     color: #ffffff;
     margin-bottom: 10px;
     letter-spacing: 0.5px;
@@ -113,7 +120,7 @@ section {
 section h2 {
     color: #ffffff;
     margin-bottom: 20px;
-    font-size: 2rem;
+    font-size: clamp(1.3rem, 3.2vw, 2rem);
     text-align: center;
     border-bottom: 2px dashed rgba(255,255,255,0.12);
     padding-bottom: 10px;
@@ -122,7 +129,7 @@ section h2 {
 /* Rules Grid */
 .rules-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
     gap: 20px;
     margin-top: 20px;
 }
@@ -244,7 +251,7 @@ section h2 {
 .btn-primary {
     background: linear-gradient(135deg, #50aaff, #7b7bff);
     color: white;
-    box-shadow: 0 10px 22px rgba(80, 170, 255, 0.35);
+    box-shadow: 0 12px 26px rgba(80, 170, 255, 0.45);
 }
 
 .btn-primary:hover {
@@ -256,7 +263,7 @@ section h2 {
 .btn-secondary {
     background: linear-gradient(135deg, #ff7a7a, #ff3d67);
     color: white;
-    box-shadow: 0 10px 22px rgba(255, 82, 129, 0.35);
+    box-shadow: 0 12px 26px rgba(255, 82, 129, 0.45);
 }
 
 .btn-secondary:hover {
@@ -302,9 +309,10 @@ footer p {
 .login-brand {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     gap: 12px;
     margin-bottom: 16px;
+    flex-wrap: wrap;
 }
 
 .form-group {
@@ -402,7 +410,7 @@ footer p {
 
 .levels-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
     gap: 20px;
     margin-bottom: 30px;
 }
@@ -498,10 +506,10 @@ footer p {
 .quiz-option {
     display: block;
     width: 100%;
-    padding: 15px;
+    padding: 18px 16px;
     margin-bottom: 10px;
-    background: rgba(255, 255, 255, 0.06);
-    border: 2px solid rgba(255,255,255,0.12);
+    background: rgba(255, 255, 255, 0.07);
+    border: 2px solid rgba(255,255,255,0.14);
     border-radius: 12px;
     cursor: pointer;
     transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
@@ -510,8 +518,8 @@ footer p {
 }
 
 .quiz-option:hover {
-    background: rgba(80,170,255,0.12);
-    border-color: rgba(80,170,255,0.6);
+    background: rgba(80,170,255,0.14);
+    border-color: rgba(80,170,255,0.7);
     transform: translateY(-1px);
 }
 
@@ -598,6 +606,12 @@ footer p {
     backdrop-filter: blur(10px);
 }
 
+.table-responsive {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
 .teams-table table {
     width: 100%;
     border-collapse: collapse;
@@ -670,6 +684,18 @@ footer p {
     .admin-stats {
         grid-template-columns: repeat(2, 1fr);
     }
+
+    .brand-logos { gap: 12px; }
+
+    .quiz-container,
+    .riddle-container,
+    .login-container,
+    .dashboard-header,
+    section,
+    footer {
+        padding: 18px;
+        border-radius: 14px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -685,4 +711,14 @@ footer p {
     .teams-table td {
         padding: 10px 8px;
     }
+
+    .btn { min-width: 120px; }
+    header { padding: 22px; }
+    header h1 { font-size: 1.9rem; }
+}
+
+/* State banners */
+.eliminated-message .level-card.current {
+    border: 2px solid rgba(255, 77, 109, 0.6);
+    background: linear-gradient(135deg, rgba(255, 77, 109, 0.18), rgba(255, 122, 122, 0.18));
 }
